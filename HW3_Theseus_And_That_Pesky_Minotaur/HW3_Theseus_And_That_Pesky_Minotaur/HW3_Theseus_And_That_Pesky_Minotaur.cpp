@@ -5,6 +5,7 @@
 #pragma warning (disable: 4996)
 #define NEXTLINE cout<<endl;
 using namespace std;
+
 /*
 2017-05-20~2017-05-29
 양지용_2013726091
@@ -67,7 +68,8 @@ void main() {
 	int Px, Py;		//Player Location
 	int Mx, My;		//Minotaur Location
 	for (int n = 0; n < 5; n++) {
-		cout << "Puzzle" << n << endl;
+		cout << "Puzzle" << n + 1;
+		NEXTLINE;
 		Map_Setting(Px, Py, Mx, My, file[n], map);
 
 		find_Path(Px, Py, Mx, My, Stay, 2, exMap);
@@ -115,13 +117,13 @@ void main() {
 	delete[] exMap;
 }
 
+//수평으로 움직였을 경우 플레이어와 가까워 질 수 있는지 판단.
+//만일 가능하다면 수평으로 움직임.
+//수평으로 움직일 수 없다면 수직으로 가까워 질 수 있는지 판단.
+//만일 가능하다면 수직으로 움직임.
+//수평, 수직 모두 움직일 수 없다면 가만히 있는다.
 //If Player dead, return 0; alived, return 1
 int move_Minotaur(int Px, int Py, int& Mx, int& My, int Pdirec, int flag, bool**** exMap) {
-	//수평으로 움직였을 경우 플레이어와 가까워 질 수 있는지 판단.
-	//만일 가능하다면 수평으로 움직임.
-	//수평으로 움직일 수 없다면 수직으로 가까워 질 수 있는지 판단.
-	//만일 가능하다면 수직으로 움직임.
-	//수평, 수직 모두 움직일 수 없다면 가만히 있는다.
 	int tempDirection[2];
 	int tempMx = Mx, tempMy = My;
 
@@ -132,17 +134,13 @@ int move_Minotaur(int Px, int Py, int& Mx, int& My, int Pdirec, int flag, bool**
 		switch (tempDirection[i])
 		{
 		case Up:
-			My -= 2;
-			break;
+			My -= 2;	break;
 		case Right:
-			Mx += 2;
-			break;
+			Mx += 2;	break;
 		case Down:
-			My += 2;
-			break;
+			My += 2;	break;
 		case Left:
-			Mx -= 2;
-			break;
+			Mx -= 2;	break;
 		case Stay:
 			break;
 		}
@@ -182,15 +180,16 @@ int approved_Minotaur_Move(int Px, int Py, int Mx, int My) {
 		if (map[My][Mx + 1] == 1)
 			return Right;
 	}
-	if (dx < 0) {
+	else if (dx < 0) {
 		if (map[My][Mx - 1] == 1)
 			return Left;
 	}
+
 	if (dy > 0) {
 		if (map[My + 1][Mx] == 1)
 			return Down;
 	}
-	if (dy < 0) {
+	else if (dy < 0) {
 		if (map[My - 1][Mx] == 1)
 			return Up;
 	}
@@ -198,6 +197,7 @@ int approved_Minotaur_Move(int Px, int Py, int Mx, int My) {
 }
 
 int approved_Player_Move(int Px, int Py) {
+	//default setting : Stay
 	int return_value = (int)00010000;
 	//map[][] == 1 -> path
 	//UP * 2^3
@@ -274,176 +274,6 @@ int find_Path(int Px, int Py, int Mx, int My, Direction direc, int flag, bool***
 		all_Direct.pop_back();
 	}
 
-	/*
-	switch (direc)
-	{
-	case Up:
-		decision_Move = approved_Player_Move(Px, Py);
-		if (decision_Move & 00000010) {
-			all_Direct.push_back('L');
-			approved_Success = find_Path(Px - 2, Py, Mx, My, Left, 1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00001000) {
-			all_Direct.push_back('U');
-			approved_Success = find_Path(Px, Py - 2, Mx, My, Up, 1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000001) {
-			all_Direct.push_back('R');
-			approved_Success = find_Path(Px + 2, Py, Mx, My, Right, 1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000100) {
-			all_Direct.push_back('D');
-			approved_Success = find_Path(Px, Py + 2, Mx, My, Down, 0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00010000) {
-			all_Direct.push_back('S');
-			approved_Success = find_Path(Px, Py, Mx, My, Stay,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		break;
-	case Down:
-		decision_Move = approved_Player_Move( Px, Py);
-		if (decision_Move & 00000001) {
-			all_Direct.push_back('R');
-			approved_Success = find_Path(Px + 2, Py, Mx, My, Right,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000100) {
-			all_Direct.push_back('D');
-			approved_Success = find_Path(Px, Py + 2, Mx, My, Down,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000010) {
-			all_Direct.push_back('L');
-			approved_Success = find_Path(Px - 2, Py, Mx, My, Left,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00001000) {
-			all_Direct.push_back('U');
-			approved_Success = find_Path(Px, Py - 2, Mx, My, Up,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00010000) {
-			all_Direct.push_back('S');
-			approved_Success = find_Path(Px, Py, Mx, My, Stay,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		break;
-	case Left:
-		decision_Move = approved_Player_Move( Px, Py);
-		if (decision_Move & 00000100) {
-			all_Direct.push_back('D');
-			approved_Success = find_Path(Px, Py + 2, Mx, My, Down,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000010) {
-			all_Direct.push_back('L');
-			approved_Success = find_Path(Px - 2, Py, Mx, My, Left,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00001000) {
-			all_Direct.push_back('U');
-			approved_Success = find_Path(Px, Py - 2, Mx, My, Up,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000001) {
-			all_Direct.push_back('R');
-			approved_Success = find_Path(Px + 2, Py, Mx, My, Right,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00010000) {
-			all_Direct.push_back('S');
-			approved_Success = find_Path(Px, Py, Mx, My, Stay,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		break;
-	case Right:
-		decision_Move = approved_Player_Move( Px, Py);
-		if (decision_Move & 00001000) {
-			all_Direct.push_back('U');
-			approved_Success = find_Path(Px, Py - 2, Mx, My, Up,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000001) {
-			all_Direct.push_back('R');
-			approved_Success = find_Path(Px + 2, Py, Mx, My, Right,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000100) {
-			all_Direct.push_back('D');
-			approved_Success = find_Path(Px, Py + 2, Mx, My, Down,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000010) {
-			all_Direct.push_back('L');
-			approved_Success = find_Path(Px - 2, Py, Mx, My, Left,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00010000) {
-			all_Direct.push_back('S');
-			approved_Success = find_Path(Px, Py, Mx, My, Stay,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		break;
-	case Stay:
-		decision_Move = approved_Player_Move( Px, Py);
-		if (decision_Move & 00000010) {
-			all_Direct.push_back('L');
-			approved_Success = find_Path(Px - 2, Py, Mx, My, Left,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00001000) {
-			all_Direct.push_back('U');
-			approved_Success = find_Path(Px, Py - 2, Mx, My, Up,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000001) {
-			all_Direct.push_back('R');
-			approved_Success = find_Path(Px + 2, Py, Mx, My, Right,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00000100) {
-			all_Direct.push_back('D');
-			approved_Success = find_Path(Px, Py + 2, Mx, My, Down,  1, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		if (decision_Move & 00010000) {
-			all_Direct.push_back('S');
-			approved_Success = find_Path(Px, Py, Mx, My, Stay,  0, exMap);
-			if (approved_Success == 1) return 1;
-			all_Direct.pop_back();
-		}
-		break;
-	}
-	*/
 	return 0;
 }
 
@@ -467,29 +297,19 @@ void Map_Setting(int& Px, int& Py, int& Mx, int& My, FILE* file, int map[][30]) 
 			switch (mapentry) {
 				//Wall
 			case '@':
-				map[h][w] = 0;
-				break;
+				map[h][w] = 0; break;
 				//Load
 			case ' ':
-				map[h][w] = 1;
-				break;
+				map[h][w] = 1; break;
 				//start Location
 			case 'S':
-				map[h][w] = 1;
-				Px = w; Py = h;
-				break;
+				map[h][w] = 1;	Px = w; Py = h;	break;
 				//Minotaur Location
 			case 'M':
-				map[h][w] = 1;
-				Mx = w; My = h;
-				break;
+				map[h][w] = 1;	Mx = w; My = h;	break;
 				//End Location
 			case 'E':
-				map[h][w] = 1;
-				Ex = w; Ey = h;
-				break;
-			case '\n':
-				break;
+				map[h][w] = 1;	Ex = w; Ey = h; break;
 			}
 		}
 	}
